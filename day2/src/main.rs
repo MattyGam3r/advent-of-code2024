@@ -8,7 +8,7 @@ enum ReportType {
     Decreasing,
     Unknown,
 }
-
+#[derive(PartialEq)]
 enum Validity {
     Valid,
     NonValid,
@@ -35,39 +35,19 @@ fn main() {
         //A line contains integers.
         line.unwrap().split(' ').into_iter().for_each(|val| {
             let val = val.parse::<i32>().expect("Unable to Convert val into an Integer");
-            let mut current_line_has_error = false;
             match current_line_vals.len() {
                 0 => {},
                 _ => {
                     match current_report_type {
                         ReportType::Decreasing => {
                             if current_line_vals.last().unwrap() - val > 3 || current_line_vals.last().unwrap() - val < 1 {
-                                if invalid_level_encountered == true{
-                                    current_validity = Validity::NonValid;
-                                }
-                                else{
-                                    invalid_level_encountered = true;
-                                    current_line_has_error = true;
-                                    if current_line_vals.len() == 1 {
-                                        current_report_type = ReportType::Unknown;
-                                    }
-                                }
+                                current_validity = Validity::NonValid;
                                 
                             }
                         },
-
                         ReportType::Increasing => {
                             if val - current_line_vals.last().unwrap() > 3 || val - current_line_vals.last().unwrap() < 1 {
-                                if invalid_level_encountered == true{
-                                    current_validity = Validity::NonValid;
-                                }
-                                else{
-                                    invalid_level_encountered = true;
-                                    current_line_has_error = true;
-                                    if current_line_vals.len() == 1 {
-                                        current_report_type = ReportType::Unknown;
-                                    }
-                                }
+                                current_validity = Validity::NonValid;
                             }
                         },
 
@@ -78,50 +58,43 @@ fn main() {
                                 Ordering::Less => {
                                     current_report_type = ReportType::Decreasing;
                                     if current_line_vals.last().unwrap() - val > 3 || current_line_vals.last().unwrap() - val < 1 {
-                                        if invalid_level_encountered == true{
-                                            current_validity = Validity::NonValid;
-                                        }
-                                        else{
-                                            invalid_level_encountered = true;
-                                            current_line_has_error = true;
-                                            if current_line_vals.len() == 1 {
-                                                current_report_type = ReportType::Unknown;
-                                            }
-                                        }
+                                        current_validity = Validity::NonValid;
                                     }
                                 },
 
                                 Ordering::Equal => {
-                                    if invalid_level_encountered == true{
-                                        current_validity = Validity::NonValid;
-                                    }
-                                    invalid_level_encountered = true;
-                                    current_line_has_error = true;
+                                    current_validity = Validity::NonValid;
                                 },
 
                                 Ordering::Greater => {
                                     current_report_type = ReportType::Increasing;
                                     if val - current_line_vals.last().unwrap() > 3 || val - current_line_vals.last().unwrap() < 1 {
-                                        if invalid_level_encountered == true{
-                                            current_validity = Validity::NonValid;
-                                        }
-                                        else{
-                                            invalid_level_encountered = true;
-                                            current_line_has_error = true;
-                                            if current_line_vals.len() == 1 {
-                                                current_report_type = ReportType::Unknown;
-                                            }
-                                        }
+                                        current_validity = Validity::NonValid;
                                     }
                                 },
                             }
                         },
                     }
                 }
+
                 
             }
-            //If the current value has an error, we don't look at it in the future again
-            if current_line_has_error == false {
+            //Check if it has been set to NonValid
+            if current_validity == Validity::NonValid{
+                if invalid_level_encountered == false{
+                    current_validity = Validity::Valid;
+                    invalid_level_encountered = true;
+                    if current_line_vals.len() <= 2 {
+                        current_report_type = ReportType::Unknown;
+                        current_line_vals.push(val);
+                    }
+                }
+                else{
+                    return;
+                }
+                
+            }
+            else{
                 current_line_vals.push(val);
             }
         });
@@ -137,3 +110,6 @@ fn main() {
     println!("PART 1 (Number of Valid Reports): {}", valid_lines);
     println!("PART 2 (Number of Valid Reports): {}", valid_lines_p2);
 }
+
+
+//CORRECT ANSWERS: 670 for P1, 700 for P2
