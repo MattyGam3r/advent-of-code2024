@@ -69,9 +69,6 @@ fn main() {
             bad_conditions.push(condition);
         }
     }
-    // 144354 too high
-    // 5312 too high
-    // 0 not correct
     println!("PART 1 ANS: {}", answer);
     let mut p2ans = 0;
     //Now, we need to fix the bad ones
@@ -88,6 +85,5 @@ fn main() {
         }
         p2ans +=bad_condition[bad_condition.len() / 2];
     }
-    //5263 is too high
     println!("P2 ANS: {}", p2ans);
 }
